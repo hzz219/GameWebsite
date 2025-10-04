@@ -1,307 +1,682 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>酷炫粒子效果</title>
+    <title>第九梦工作室</title>
     <style>
-        body {
+        * {
             margin: 0;
-            overflow: hidden;
-            background-color: #000000;
-            color: #ffffff;
-            font-family: sans-serif;
-            text-align: center;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        #container {
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #1a1a1a;
+            --bg-card: #2a2a2a;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --accent: #6366f1;
+            --accent-hover: #818cf8;
+            --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* 导航栏 */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(90deg, rgba(10, 10, 10, 0.98) 0%, rgba(26, 26, 26, 0.98) 100%);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(102, 126, 234, 0.3);
+            letter-spacing: 0.5px;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            gap: 0;
+        }
+
+        .nav-item {
+            position: relative;
+        }
+
+        .nav-link {
+            display: block;
+            color: var(--text-primary);
+            text-decoration: none;
+            padding: 0.75rem 1.25rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            border-radius: 6px;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-link::before {
+            content: '';
             position: absolute;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            opacity: 0;
+            transition: opacity 0.25s ease;
+            border-radius: 6px;
         }
 
-        #ui {
+        .nav-link:hover::before {
+            opacity: 1;
+        }
+
+        .nav-link:hover {
+            color: #667eea;
+            transform: translateY(-1px);
+        }
+
+        .nav-link::after {
+            content: '';
             position: absolute;
-            bottom: 30px;
-            width: 100%;
-            display: flex;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+
+        .nav-link:hover::after {
+            width: 80%;
+        }
+
+        /* 移动端菜单按钮 */
+        .menu-toggle {
+            display: none;
             flex-direction: column;
-            align-items: center;
-            z-index: 10;
-        }
-
-        #shape-button, #color-picker {
-            padding: 10px 20px;
-            font-size: 16px;
-            border: 2px solid #fff;
-            background-color: transparent;
-            color: #fff;
-            cursor: pointer;
-            border-radius: 5px;
-            transition: background-color 0.3s, color 0.3s;
-            margin: 5px 0;
-        }
-
-        #shape-button:hover {
-            background-color: #fff;
-            color: #000;
-        }
-        
-        #color-picker {
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-            width: 50px;
-            height: 50px;
+            background: none;
             border: none;
-            background: transparent;
             cursor: pointer;
-            padding: 0;
-        }
-        
-        #color-picker::-webkit-color-swatch {
-            border: 2px solid #fff;
-            border-radius: 50%;
-        }
-        
-        #color-picker::-webkit-color-swatch-wrapper {
-            padding: 0;
+            padding: 0.5rem;
+            gap: 4px;
         }
 
-        .controls-group {
+        .menu-toggle span {
+            width: 25px;
+            height: 2px;
+            background: var(--text-primary);
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+
+        /* 主要内容 */
+        main {
+            margin-top: 80px;
+        }
+
+        /* 轮播图 */
+        .carousel {
+            position: relative;
+            height: 70vh;
+            min-height: 500px;
+            overflow: hidden;
+            background: var(--bg-secondary);
+        }
+
+        .carousel-container {
+            position: relative;
+            height: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 20px;
+        }
+
+        .carousel-slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+        }
+
+        .carousel-slide.active {
+            opacity: 1;
+        }
+
+        .carousel-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .carousel-content {
+            position: absolute;
+            text-align: center;
+            z-index: 2;
+            color: var(--text-primary);
+        }
+
+        .carousel-content h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .carousel-content p {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+            animation: fadeInUp 1s ease-out 0.3s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .carousel-indicators {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 3;
+        }
+
+        .indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .indicator.active {
+            background: var(--accent);
+            width: 30px;
+            border-radius: 6px;
+        }
+
+        /* 四大板块 */
+        .sections {
+            padding: 4rem 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-top: 3rem;
+        }
+
+        .section-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .section-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .section-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .section-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .section-card p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            flex: 1;
+        }
+
+        .section-card a {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            background: var(--gradient);
+            color: var(--text-primary);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .section-card a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        /* 页脚 */
+        footer {
+            background: var(--bg-secondary);
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .section-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            nav {
+                padding: 0 1.5rem;
+            }
+
+            .nav-link {
+                padding: 0.75rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .logo {
+                font-size: 1.4rem;
+            }
+
+            .nav-link {
+                padding: 0.75rem 0.875rem;
+                font-size: 0.875rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: flex;
+                z-index: 1001;
+            }
+
+            .nav-menu {
+                position: fixed;
+                top: 70px;
+                left: 0;
+                right: 0;
+                background: rgba(10, 10, 10, 0.98);
+                backdrop-filter: blur(20px);
+                flex-direction: column;
+                padding: 2rem;
+                gap: 0.5rem;
+                opacity: 0;
+                visibility: hidden;
+                transform: translateY(-20px);
+                transition: all 0.3s ease;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            }
+
+            .nav-menu.active {
+                opacity: 1;
+                visibility: visible;
+                transform: translateY(0);
+            }
+
+            .nav-link {
+                text-align: center;
+                padding: 1rem;
+                font-size: 1rem;
+                border-radius: 8px;
+                width: 100%;
+            }
+
+            .menu-toggle.active span:nth-child(1) {
+                transform: rotate(45deg) translate(6px, 6px);
+            }
+
+            .menu-toggle.active span:nth-child(2) {
+                opacity: 0;
+            }
+
+            .menu-toggle.active span:nth-child(3) {
+                transform: rotate(-45deg) translate(7px, -7px);
+            }
+
+            nav {
+                padding: 0 1rem;
+                height: 70px;
+            }
+
+            .carousel-content h1 {
+                font-size: 2.5rem;
+            }
+
+            .carousel-content p {
+                font-size: 1.1rem;
+            }
+
+            .section-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo {
+                font-size: 1.2rem;
+            }
+
+            nav {
+                padding: 0 0.75rem;
+            }
+
+            .nav-menu {
+                padding: 1.5rem 1rem;
+            }
+
+            .nav-link {
+                font-size: 0.95rem;
+            }
+        }
+
+        /* 动画效果 */
+        .fade-in {
+            animation: fadeIn 1s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .slide-in {
+            animation: slideIn 1s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
     </style>
 </head>
 <body>
-    <div id="container"></div>
-    <div id="ui">
-        <div class="controls-group">
-            <button id="shape-button">改变形状</button>
-            <input type="color" id="color-picker" value="#00ffcc">
-        </div>
-    </div>
+    <header>
+        <nav>
+            <div class="logo">第九梦工作室</div>
+            <button class="menu-toggle" aria-label="切换菜单">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="#games" class="nav-link">游戏</a></li>
+                <li class="nav-item"><a href="#apps" class="nav-link">应用</a></li>
+                <li class="nav-item"><a href="#blog" class="nav-link">技术博客</a></li>
+                <li class="nav-item"><a href="#other" class="nav-link">其他作品</a></li>
+            </ul>
+        </nav>
+    </header>
 
-    <!-- 使用 npmmirror.com（原淘宝 CDN） -->
-    <script src="https://registry.npmmirror.com/three/0.137.0/files/build/three.min.js"></script>
-    <script src="https://registry.npmmirror.com/three/0.137.0/files/examples/js/controls/OrbitControls.js"></script>
+    <main>
+        <!-- 轮播图部分 -->
+        <section class="carousel">
+            <div class="carousel-container">
+                <div class="carousel-slide active">
+                    <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1920&h=1080&fit=crop" alt="游戏开发">
+                    <div class="carousel-content">
+                        <h1>创新游戏体验</h1>
+                        <p>打造沉浸式游戏世界，引领互动娱乐新潮流</p>
+                    </div>
+                </div>
+                <div class="carousel-slide">
+                    <img src="https://images.unsplash.com/photo-1551650975-87deedd944c3?w=1920&h=1080&fit=crop" alt="应用开发">
+                    <div class="carousel-content">
+                        <h1>智能应用解决方案</h1>
+                        <p>匠心打造的移动应用，提升生活品质与工作效率</p>
+                    </div>
+                </div>
+                <div class="carousel-slide">
+                    <img src="https://images.unsplash.com/photo-1518432031352-d6fc5c10da5a?w=1920&h=1080&fit=crop" alt="AI技术">
+                    <div class="carousel-content">
+                        <h1>前沿AI技术</h1>
+                        <p>探索人工智能边界，用科技创造无限可能</p>
+                    </div>
+                </div>
+            </div>
+            <div class="carousel-indicators">
+                <div class="indicator active" onclick="showSlide(0)"></div>
+                <div class="indicator" onclick="showSlide(1)"></div>
+                <div class="indicator" onclick="showSlide(2)"></div>
+            </div>
+        </section>
+
+        <!-- 四大板块部分 -->
+        <section class="sections">
+            <div class="section-grid">
+                <div id="games" class="section-card slide-in">
+                    <span class="section-icon">🎮</span>
+                    <h3>游戏</h3>
+                    <p>我们致力于创造独特的游戏体验，从休闲小游戏到沉浸式大作，每个项目都充满创意与激情。探索游戏艺术的无限可能。</p>
+                    <a href="games/index.html">查看游戏作品</a>
+                </div>
+
+                <div id="apps" class="section-card slide-in">
+                    <span class="section-icon">📱</span>
+                    <h3>应用</h3>
+                    <p>设计并开发实用的移动应用，注重用户体验与功能完美结合。让科技服务生活，创造更便捷的数字体验。</p>
+                    <a href="apps/index.html">浏览应用作品</a>
+                </div>
+
+                <div id="blog" class="section-card slide-in">
+                    <span class="section-icon">🤖</span>
+                    <h3>AI技术博客</h3>
+                    <p>分享最新的人工智能技术洞察、开发经验和行业趋势。与技术爱好者一起探索AI的奥秘，推动技术创新。</p>
+                    <a href="blog/index.html">阅读技术文章</a>
+                </div>
+
+                <div id="other" class="section-card slide-in">
+                    <span class="section-icon">✨</span>
+                    <h3>其他作品</h3>
+                    <p>收录各种创意实验作品和技术练手项目，包括网页特效、交互设计、创意编程等。这里是创意的试验田。</p>
+                    <a href="other/index.html">探索更多作品</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 第九梦工作室. 保留所有权利.</p>
+    </footer>
 
     <script>
-        let scene, camera, renderer, particles, controls;
-        const particleCount = 20000;
-        const shapes = ['cube', 'sphere', 'pyramid', 'cylinder'];
-        let currentShapeIndex = 0;
-        let isTransitioning = false;
+        // 轮播图功能
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.carousel-slide');
+        const indicators = document.querySelectorAll('.indicator');
 
-        function init() {
-            scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.z = 100;
+        function showSlide(index) {
+            slides[currentSlide].classList.remove('active');
+            indicators[currentSlide].classList.remove('active');
 
-            renderer = new THREE.WebGLRenderer({ antialiasing: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            document.getElementById('container').appendChild(renderer.domElement);
+            currentSlide = index;
 
-            controls = new THREE.OrbitControls(camera, renderer.domElement);
-            controls.enableDamping = true;
-            controls.dampingFactor = 0.05;
-
-            // 创建初始的立方体粒子，并设置初始渐变色
-            createParticles('cube', new THREE.Color(document.getElementById('color-picker').value));
-
-            window.addEventListener('resize', onWindowResize, false);
-            document.getElementById('shape-button').addEventListener('click', changeShape);
-            document.getElementById('color-picker').addEventListener('input', changeParticleColor);
+            slides[currentSlide].classList.add('active');
+            indicators[currentSlide].classList.add('active');
         }
 
-        // 创建粒子，并接受一个主色作为参数
-        function createParticles(shapeType, baseColor) {
-            // 如果已经存在粒子，先移除
-            if (particles) {
-                scene.remove(particles);
-                particles.geometry.dispose();
-            }
-            
-            const geometry = new THREE.BufferGeometry();
-            const positions = [];
-            const colors = [];
-            
-            const pMaterial = new THREE.PointsMaterial({
-                size: 2,
-                vertexColors: true, // 启用顶点颜色
-                blending: THREE.AdditiveBlending,
-                transparent: true,
-                sizeAttenuation: false,
-                // **关键修复**：将材质颜色设置为白色，这样它就不会影响顶点颜色。
-                color: new THREE.Color(0xffffff) 
+        function nextSlide() {
+            const nextIndex = (currentSlide + 1) % slides.length;
+            showSlide(nextIndex);
+        }
+
+        // 自动轮播
+        setInterval(nextSlide, 5000);
+
+        // 移动端菜单切换
+        const menuToggle = document.querySelector('.menu-toggle');
+        const navMenu = document.querySelector('.nav-menu');
+
+        if (menuToggle && navMenu) {
+            menuToggle.addEventListener('click', () => {
+                menuToggle.classList.toggle('active');
+                navMenu.classList.toggle('active');
             });
 
-            const tempColor = new THREE.Color();
-            const hsl = {};
+            // 点击菜单项后关闭移动端菜单
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', () => {
+                    menuToggle.classList.remove('active');
+                    navMenu.classList.remove('active');
+                });
+            });
 
-            for (let i = 0; i < particleCount; i++) {
-                const x = THREE.MathUtils.randFloatSpread(100);
-                const y = THREE.MathUtils.randFloatSpread(100);
-                const z = THREE.MathUtils.randFloatSpread(100);
-                positions.push(x, y, z);
+            // 点击菜单外部关闭菜单
+            document.addEventListener('click', (e) => {
+                if (!navMenu.contains(e.target) && !menuToggle.contains(e.target)) {
+                    menuToggle.classList.remove('active');
+                    navMenu.classList.remove('active');
+                }
+            });
+        }
 
-                baseColor.getHSL(hsl);
-                tempColor.setHSL(
-                    hsl.h + THREE.MathUtils.randFloat(-0.05, 0.05),
-                    hsl.s + THREE.MathUtils.randFloat(-0.2, 0.2),
-                    hsl.l + THREE.MathUtils.randFloat(-0.2, 0.2)
-                );
-                colors.push(tempColor.r, tempColor.g, tempColor.b);
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // 滚动时的导航栏效果
+        let lastScroll = 0;
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset;
+            const header = document.querySelector('header');
+
+            if (currentScroll > lastScroll && currentScroll > 100) {
+                header.style.transform = 'translateY(-100%)';
+            } else {
+                header.style.transform = 'translateY(0)';
             }
 
-            geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-            geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
-            particles = new THREE.Points(geometry, pMaterial);
-            scene.add(particles);
+            lastScroll = currentScroll;
+        });
 
-            setTargetPositions(shapeType);
-        }
+        // 卡片进入视窗动画
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
 
-        // 改变粒子颜色（生成新的渐变色）
-        function changeParticleColor(event) {
-            const newBaseColor = new THREE.Color(event.target.value);
-            const colors = particles.geometry.attributes.color.array;
-            const tempColor = new THREE.Color();
-            const hsl = {};
-            
-            newBaseColor.getHSL(hsl);
-
-            for (let i = 0; i < particleCount; i++) {
-                tempColor.setHSL(
-                    hsl.h + THREE.MathUtils.randFloat(-0.05, 0.05),
-                    hsl.s + THREE.MathUtils.randFloat(-0.2, 0.2),
-                    hsl.l + THREE.MathUtils.randFloat(-0.2, 0.2)
-                );
-                colors[i * 3] = tempColor.r;
-                colors[i * 3 + 1] = tempColor.g;
-                colors[i * 3 + 2] = tempColor.b;
-            }
-            particles.geometry.attributes.color.needsUpdate = true;
-        }
-        
-        // 计算不同形状的目标位置 (保持不变)
-        function setTargetPositions(shapeType) {
-            const targetPositions = [];
-            if (shapeType === 'cube') {
-                for (let i = 0; i < particleCount; i++) {
-                    targetPositions.push(THREE.MathUtils.randFloat(-50, 50), THREE.MathUtils.randFloat(-50, 50), THREE.MathUtils.randFloat(-50, 50));
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
                 }
-            } else if (shapeType === 'sphere') {
-                for (let i = 0; i < particleCount; i++) {
-                    const radius = 50;
-                    const phi = Math.acos(2 * Math.random() - 1);
-                    const theta = Math.random() * Math.PI * 2;
-                    const x = radius * Math.sin(phi) * Math.cos(theta);
-                    const y = radius * Math.sin(phi) * Math.sin(theta);
-                    const z = radius * Math.cos(phi);
-                    targetPositions.push(x, y, z);
-                }
-            } else if (shapeType === 'pyramid') {
-                const height = 100;
-                const base = 100;
-                for (let i = 0; i < particleCount; i++) {
-                    const x = THREE.MathUtils.randFloat(-base / 2, base / 2);
-                    const z = THREE.MathUtils.randFloat(-base / 2, base / 2);
-                    const y = THREE.MathUtils.randFloat(0, height) - height / 2;
-                    if (Math.abs(x) < (base / 2) * (1 - (y + height / 2) / height) && Math.abs(z) < (base / 2) * (1 - (y + height / 2) / height)) {
-                        targetPositions.push(x, y, z);
-                    } else {
-                        i--;
-                    }
-                }
-            } else if (shapeType === 'cylinder') {
-                const radius = 50;
-                const height = 100;
-                for (let i = 0; i < particleCount; i++) {
-                    const theta = Math.random() * Math.PI * 2;
-                    const x = radius * Math.cos(theta);
-                    const z = radius * Math.sin(theta);
-                    const y = THREE.MathUtils.randFloat(-height / 2, height / 2);
-                    targetPositions.push(x, y, z);
-                }
-            }
-            particles.targetPositions = targetPositions;
-        }
+            });
+        }, observerOptions);
 
-        // 改变形状 (保持不变)
-        function changeShape() {
-            if (isTransitioning) return;
-            isTransitioning = true;
-            currentShapeIndex = (currentShapeIndex + 1) % shapes.length;
-            const nextShape = shapes[currentShapeIndex];
-            setTargetPositions(nextShape);
-
-            const positions = particles.geometry.attributes.position.array;
-            const targetPositions = particles.targetPositions;
-
-            const scatterPositions = [];
-            for (let i = 0; i < particleCount; i++) {
-                scatterPositions.push(
-                    positions[i * 3] + THREE.MathUtils.randFloatSpread(200),
-                    positions[i * 3 + 1] + THREE.MathUtils.randFloatSpread(200),
-                    positions[i * 3 + 2] + positions[i * 3 + 2] + THREE.MathUtils.randFloatSpread(200)
-                );
-            }
-
-            let scatterProgress = 0;
-            const scatterDuration = 60;
-            const scatterInterval = setInterval(() => {
-                const positions = particles.geometry.attributes.position.array;
-                const progress = scatterProgress / scatterDuration;
-                for (let i = 0; i < particleCount; i++) {
-                    positions[i * 3] += (scatterPositions[i * 3] - positions[i * 3]) * 0.1;
-                    positions[i * 3 + 1] += (scatterPositions[i * 3 + 1] - positions[i * 3 + 1]) * 0.1;
-                    positions[i * 3 + 2] += (scatterPositions[i * 3 + 2] - positions[i * 3 + 2]) * 0.1;
-                }
-                particles.geometry.attributes.position.needsUpdate = true;
-                scatterProgress++;
-                if (scatterProgress >= scatterDuration) {
-                    clearInterval(scatterInterval);
-                    let returnProgress = 0;
-                    const returnDuration = 120;
-                    const returnInterval = setInterval(() => {
-                        const positions = particles.geometry.attributes.position.array;
-                        const progress = returnProgress / returnDuration;
-                        for (let i = 0; i < particleCount; i++) {
-                            positions[i * 3] += (targetPositions[i * 3] - positions[i * 3]) * 0.05;
-                            positions[i * 3 + 1] += (targetPositions[i * 3 + 1] - positions[i * 3 + 1]) * 0.05;
-                            positions[i * 3 + 2] += (targetPositions[i * 3 + 2] - positions[i * 3 + 2]) * 0.05;
-                        }
-                        particles.geometry.attributes.position.needsUpdate = true;
-                        returnProgress++;
-                        if (returnProgress >= returnDuration) {
-                            clearInterval(returnInterval);
-                            isTransitioning = false;
-                        }
-                    }, 1000 / 60);
-                }
-            }, 1000 / 60);
-        }
-
-        function onWindowResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        }
-
-        function animate() {
-            requestAnimationFrame(animate);
-            controls.update();
-            renderer.render(scene, camera);
-        }
-
-        init();
-        animate();
+        // 为卡片添加观察器
+        document.querySelectorAll('.section-card').forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px)';
+            card.style.transition = `all 0.6s ease ${index * 0.1}s`;
+            observer.observe(card);
+        });
     </script>
 </body>
 </html>
